@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Titan V39 - Gold</title>
+    <title>Titan V39 - Acesso Restrito</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* --- DESIGN SYSTEM DARK --- */
@@ -52,7 +52,7 @@
         .card-body { padding: 20px; border-top: 1px solid var(--border); display: none; background: rgba(0,0,0,0.2); }
         .card.open .card-body { display: block; }
 
-        /* --- AREA DE VENDAS (LINK CORRIGIDO) --- */
+        /* --- AREA DE VENDAS --- */
         .premium-card {
             background: linear-gradient(135deg, #18181b 0%, #064e3b 100%);
             border: 1px solid #22c55e;
@@ -173,15 +173,26 @@
 
     <div id="loginScreen">
         <div class="login-card">
-            <div class="login-avatar">⚡</div>
-            <h2 style="color:white; margin: 35px 0 25px; font-weight:800; font-size:1.5rem;">TITAN V39</h2>
-            <div style="text-align:left; margin-bottom:5px; font-size:0.75rem; color:#a1a1aa; font-weight:700;">NOME</div>
-            <input type="text" id="loginUser" class="form-input" placeholder="Seu nome">
-            <div style="display: flex; gap: 10px;">
-                <div style="flex:1"><div style="text-align:left; margin-bottom:5px; font-size:0.75rem; color:#a1a1aa; font-weight:700;">PESO (KG)</div><input type="number" id="loginWeight" class="form-input" placeholder="00.0"></div>
-                <div style="flex:1"><div style="text-align:left; margin-bottom:5px; font-size:0.75rem; color:#a1a1aa; font-weight:700;">ALTURA (CM)</div><input type="number" id="loginHeight" class="form-input" placeholder="000"></div>
+            <div class="login-avatar">🔒</div>
+            <h2 style="color:white; margin: 35px 0 10px; font-weight:800; font-size:1.5rem;">ÁREA RESTRITA</h2>
+            <p style="color:#a1a1aa; font-size:0.8rem; margin-bottom:25px;">Acesso exclusivo para membros TITAN</p>
+
+            <div style="text-align:left; margin-bottom:5px; font-size:0.75rem; color:#22c55e; font-weight:700;">SENHA DE ACESSO</div>
+            <input type="password" id="loginPass" class="form-input" placeholder="Digite a senha..." style="text-align:center; border: 2px solid #22c55e; color:#22c55e; font-weight:bold;">
+
+            <div style="border-top:1px solid #333; margin: 20px 0; padding-top:20px;">
+                <div style="text-align:left; margin-bottom:5px; font-size:0.75rem; color:#a1a1aa; font-weight:700;">SEU NOME</div>
+                <input type="text" id="loginUser" class="form-input" placeholder="Nome">
+
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex:1"><div style="text-align:left; margin-bottom:5px; font-size:0.75rem; color:#a1a1aa; font-weight:700;">PESO (KG)</div><input type="number" id="loginWeight" class="form-input" placeholder="00.0"></div>
+                    <div style="flex:1"><div style="text-align:left; margin-bottom:5px; font-size:0.75rem; color:#a1a1aa; font-weight:700;">ALTURA (CM)</div><input type="number" id="loginHeight" class="form-input" placeholder="000"></div>
+                </div>
             </div>
-            <button class="btn-primary" onclick="app.login()">ENTRAR</button>
+
+            <button class="btn-primary" onclick="app.login()">ACESSAR SISTEMA</button>
+
+            <a href="https://pay.kiwify.com.br/MeckdYl" target="_blank" style="display:block; margin-top:15px; font-size:0.8rem; color:#22c55e; text-decoration:none;">Não tenho a senha ></a>
         </div>
     </div>
 
@@ -227,7 +238,7 @@
                         Não sabe montar treino? Baixe o combo de fichas prontas (Hipertrofia Ectomorfo + Guia).
                     </p>
                     <div class="premium-price">R$ 29,90</div>
-                    
+
                     <a href="https://pay.kiwify.com.br/MeckdYl" target="_blank" style="text-decoration: none;">
                         <button class="premium-btn">BAIXAR FICHAS AGORA ⚡</button>
                     </a>
@@ -252,9 +263,9 @@
                 <div class="card">
                     <div class="card-head"><div><div class="card-title">Macronutrientes</div><div class="card-sub">Meta: <span id="targetCal">2000</span></div></div><div class="card-title" id="totalCal" style="font-size:1.5rem;">0</div></div>
                     <div style="padding:20px;">
-                        <div style="margin-bottom:10px;"><div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:5px; color:#a1a1aa;"><span>Prot</span><span id="txtP">0g</span></div><div style="height:6px; background:var(--bg-input); border-radius:3px;"><div id="barP" style="width:0%; height:100%; background:var(--primary); border-radius:3px;"></div></div></div>
-                        <div style="margin-bottom:10px;"><div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:5px; color:#a1a1aa;"><span>Carb</span><span id="txtC">0g</span></div><div style="height:6px; background:var(--bg-input); border-radius:3px;"><div id="barC" style="width:0%; height:100%; background:var(--warning); border-radius:3px;"></div></div></div>
-                        <div><div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:5px; color:#a1a1aa;"><span>Gord</span><span id="txtF">0g</span></div><div style="height:6px; background:var(--bg-input); border-radius:3px;"><div id="barF" style="width:0%; height:100%; background:var(--danger); border-radius:3px;"></div></div></div>
+                        <div style="margin-bottom:10px;"><div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:5px; color:#a1a1aa; font-weight:700;"><span>Prot</span><span id="txtP">0g</span></div><div style="height:6px; background:var(--bg-input); border-radius:3px;"><div id="barP" style="width:0%; height:100%; background:var(--primary); border-radius:3px;"></div></div></div>
+                        <div style="margin-bottom:10px;"><div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:5px; color:#a1a1aa; font-weight:700;"><span>Carb</span><span id="txtC">0g</span></div><div style="height:6px; background:var(--bg-input); border-radius:3px;"><div id="barC" style="width:0%; height:100%; background:var(--warning); border-radius:3px;"></div></div></div>
+                        <div><div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:5px; color:#a1a1aa; font-weight:700;"><span>Gord</span><span id="txtF">0g</span></div><div style="height:6px; background:var(--bg-input); border-radius:3px;"><div id="barF" style="width:0%; height:100%; background:var(--danger); border-radius:3px;"></div></div></div>
                     </div>
                 </div>
                 <div style="display:flex; justify-content:space-between; margin:25px 0 10px; align-items:center;">
@@ -403,6 +414,13 @@
             save() { localStorage.setItem('titanV39', JSON.stringify(this.data)); },
 
             login() {
+                // 🔒 VERIFICAÇÃO DE SENHA
+                const pass = document.getElementById('loginPass').value;
+                if(pass !== "TITANVIP") {
+                    alert("SENHA INCORRETA! Você precisa ser membro VIP.");
+                    return;
+                }
+
                 const u = document.getElementById('loginUser').value;
                 if (!u) return alert("Preencha todos os campos!");
                 this.data.user = u;
