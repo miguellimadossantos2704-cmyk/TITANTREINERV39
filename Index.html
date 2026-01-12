@@ -316,12 +316,14 @@
 
     <div id="workoutModal" class="modal-overlay"><div class="modal-content">
         <h3 style="color:white; margin-bottom:20px;">Criar Ficha</h3>
-        <input type="text" id="workoutName" class="form-input" placeholder="Nome (Ex: Peito A)">
+        <p style="font-size:0.7rem; color:#888; margin-bottom:10px;">Selecione exercícios de vários grupos, se quiser.</p>
+        <input type="text" id="workoutName" class="form-input" placeholder="Nome (Ex: Peito + Ombros)">
         <select id="muscleGroup" class="form-input" onchange="app.renderExList()">
             <option value="" disabled selected>Selecionar Grupo</option><option value="PEITO">Peito</option><option value="COSTAS">Costas</option><option value="OMBROS">Ombros</option><option value="BÍCEPS">Bíceps</option><option value="TRÍCEPS">Tríceps</option><option value="QUADRICEPS">Quadríceps</option><option value="POSTERIOR">Posterior</option><option value="GLUTEOS">Glúteos</option><option value="PANTURRILHA">Panturrilhas</option><option value="CORE">Abdômen</option><option value="ANTEBRACO">Antebraço</option><option value="FUNCIONAL">Funcional</option><option value="SKILLS">Skills</option>
         </select>
         <div id="exListArea" style="flex:1; overflow-y:auto; border:1px solid var(--border); margin-bottom:15px; padding:10px; background:var(--bg-input); border-radius:8px;"></div>
-        <button class="btn-primary" onclick="app.saveWorkout()">Salvar</button>
+        <div id="selectedCount" style="font-size:0.8rem; color:#60a5fa; margin-bottom:10px; text-align:right;"></div>
+        <button class="btn-primary" onclick="app.saveWorkout()">Salvar Ficha</button>
         <button class="btn-outline" onclick="app.closeModals()">Cancelar</button>
     </div></div>
 
@@ -396,6 +398,7 @@
         const app = {
             data: { user: null, xp: 0, workouts: [], meals: [], bio: {h:0,w:0}, goals: {cal:2000,p:150,c:200,f:60}, log: {}, water: 0, history: {}, measures: {} },
             timer: null, timeLeft: 0,
+            temp: [], // Memória temporária para criar treinos mistos
 
             init() {
                 const s = localStorage.getItem('titanV39');
@@ -414,7 +417,6 @@
             save() { localStorage.setItem('titanV39', JSON.stringify(this.data)); },
 
             login() {
-                // 🔒 VERIFICAÇÃO DE SENHA
                 const pass = document.getElementById('loginPass').value;
                 if(pass !== "TITANVIP") {
                     alert("SENHA INCORRETA! Você precisa ser membro VIP.");
@@ -481,7 +483,6 @@
                 });
 
                 const wg = document.getElementById('waterGrid'); wg.innerHTML = "";
-                // 14 Copos
                 for(let i=0; i<14; i++) {
                     const f = i < this.data.water ? "full" : "";
                     wg.innerHTML += `<div class="water-item ${f}" onclick="app.toggleWater(${i})">💧</div>`;
@@ -563,19 +564,39 @@
             stopTimer() { clearInterval(this.timer); document.getElementById('smartTimer').classList.remove('active'); },
             updateTimer() { document.getElementById('timerDisplay').innerText = `${Math.floor(this.timeLeft/60)}:${(this.timeLeft%60).toString().padStart(2,'0')}`; },
 
-            // --- WORKOUTS ---
+            // --- WORKOUTS (LÓGICA CORRIGIDA) ---
+            
+            // Função para alternar seleção na memória (SEM LIMPAR QUANDO MUDA CATEGORIA)
+            toggleTemp(name, type) {
+                const exists = this.temp.findIndex(x => x.n === name);
+                if(exists > -1) {
+                    this.temp.splice(exists, 1);
+                } else {
+                    this.temp.push({n: name, t: type});
+                }
+                // Atualiza contador visual
+                const count = document.getElementById('selectedCount');
+                if(this.temp.length > 0) count.innerText = this.temp.length + " exercícios selecionados no total";
+                else count.innerText = "";
+            },
+
             renderExList() {
                 const g = document.getElementById('muscleGroup').value;
-                const area = document.getElementById('exListArea'); area.innerHTML = "";
+                const area = document.getElementById('exListArea'); 
+                area.innerHTML = "";
+                
                 if(exDB[g]) {
                     exDB[g].forEach(e => {
                         const name = typeof e === 'object' ? e.n : e;
                         const tagClass = (typeof e === 'object' && e.t === 'CAL') ? 'tag-cal' : 'tag-gym';
                         const tagName = (typeof e === 'object' && e.t === 'CAL') ? 'CALISTENIA' : 'MUSCULAÇÃO';
+                        
+                        // Verifica se já está na memória temporária para marcar o checkbox
+                        const isChecked = this.temp.some(x => x.n === name) ? 'checked' : '';
 
                         area.innerHTML += `
                         <div class="ex-select-item" style="display:flex; align-items:center; padding:12px 0; border-bottom:1px solid #333;">
-                            <input type="checkbox" value="${name}" class="ex-check" style="margin-right:12px; width:18px; height:18px;">
+                            <input type="checkbox" value="${name}" class="ex-check" ${isChecked} onchange="app.toggleTemp('${name}', '${(typeof e === 'object' ? e.t : 'GYM')}')" style="margin-right:12px; width:18px; height:18px;">
                             <span class="ex-name" style="flex:1; color:white; font-size:0.9rem;">${name}</span>
                             <span class="ex-tag ${tagClass}" style="font-size:0.6rem; padding:3px 8px; border-radius:4px; font-weight:700; background:var(--${tagClass}-bg); color:var(--${tagClass}-text);">${tagName}</span>
                         </div>`;
@@ -585,11 +606,17 @@
 
             saveWorkout() {
                 const n = document.getElementById('workoutName').value || "Treino";
-                const cbs = document.querySelectorAll('.ex-check:checked');
-                if(cbs.length === 0) return alert("Selecione exercícios!");
-                const exs = Array.from(cbs).map(c => ({n: c.value, done: false, kg:0, reps:0}));
+                
+                // Agora salva baseando na memória temporária (this.temp) e não apenas no que está visível na tela
+                if(this.temp.length === 0) return alert("Selecione exercícios!");
+                
+                const exs = this.temp.map(item => ({n: item.n, done: false, kg:0, reps:0}));
+                
                 this.data.workouts.push({id: Date.now(), name: n, exs: exs});
-                this.save(); this.closeModals(); this.render();
+                this.save(); 
+                this.temp = []; // Limpa memória após salvar
+                this.closeModals(); 
+                this.render();
             },
 
             toggleEx(wid, idx) {
@@ -670,6 +697,14 @@
             toggleCard(head) { head.parentElement.classList.toggle('open'); },
             openModal(id) {
                 document.getElementById(id).classList.add('active');
+                if(id === 'workoutModal') {
+                    // Reseta a memória temporária ao abrir nova ficha
+                    this.temp = []; 
+                    document.getElementById('workoutName').value = "";
+                    document.getElementById('muscleGroup').selectedIndex = 0;
+                    document.getElementById('exListArea').innerHTML = "";
+                    document.getElementById('selectedCount').innerText = "";
+                }
                 if(id==='foodModal'){const s=document.getElementById('foodSelect'); s.innerHTML=""; foodDB.forEach(f=>s.innerHTML+=`<option value="${f.id}">${f.n}</option>`); this.checkCustomFood();}
                 if(id==='imcModal'){
                     document.getElementById('imcWeight').value = this.data.bio.w;
