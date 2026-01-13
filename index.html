@@ -3,216 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANTREINER V39 | Acesso Liberado</title>
+    <title>TITAN V39 | Dashboard Aberto</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --bg-dark: #0f0f0f;
             --bg-panel: #1a1a1a;
-            --primary: #D4AF37; /* Dourado Titan */
+            --primary: #D4AF37;
             --text-main: #ffffff;
             --text-muted: #888888;
-            --success: #28a745;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 260px;
-            background-color: var(--bg-panel);
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid #333;
-            padding: 20px;
-            position: fixed;
-            height: 100%;
-            z-index: 10;
-        }
-
-        .logo {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 40px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .nav-links { list-style: none; flex: 1; }
-        .nav-links li { margin-bottom: 10px; }
-        .nav-links a {
-            display: flex; align-items: center; gap: 15px; padding: 12px 15px;
-            color: var(--text-muted); text-decoration: none; border-radius: 10px;
-            transition: 0.3s; font-weight: 500;
-        }
-        .nav-links a:hover, .nav-links a.active {
-            background-color: rgba(212, 175, 55, 0.1); color: var(--primary);
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 260px;
-            flex: 1;
-            padding: 30px;
-        }
-
-        .header-top {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;
-        }
-
-        /* Config Bar (Onde digita Peso/Altura) */
-        .config-bar {
-            background: #222;
-            padding: 20px;
-            border-radius: 15px;
-            display: flex;
-            gap: 20px;
-            align-items: flex-end;
-            margin-bottom: 30px;
-            border: 1px solid #333;
-        }
-
-        .input-group { display: flex; flex-direction: column; gap: 5px; }
-        .input-group label { font-size: 0.8rem; color: var(--primary); font-weight: bold; }
-        .input-group input {
-            background: #111; border: 1px solid #444; color: #fff;
-            padding: 10px; border-radius: 8px; width: 120px; outline: none;
-        }
-        .btn-update {
-            background: var(--primary); border: none; padding: 10px 20px;
-            border-radius: 8px; font-weight: bold; cursor: pointer; color: #000;
-        }
-        .btn-update:hover { background: #bfa030; }
-
-        /* Dashboard Grid */
-        .dashboard-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;
-        }
-
-        .card {
-            background-color: var(--bg-panel); padding: 25px; border-radius: 15px; border: 1px solid #333;
-        }
+        body { background-color: var(--bg-dark); color: var(--text-main); display: flex; min-height: 100vh; }
         
-        .card h3 {
-            color: var(--text-main); margin-bottom: 15px; font-size: 1.2rem;
-            display: flex; justify-content: space-between;
+        /* Menu Lateral */
+        .sidebar {
+            width: 260px; background-color: var(--bg-panel); display: flex; flex-direction: column;
+            border-right: 1px solid #333; padding: 20px; position: fixed; height: 100%;
         }
+        .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
+        .nav-links { list-style: none; }
+        .nav-links li { margin-bottom: 10px; }
+        .nav-links a { display: flex; align-items: center; gap: 15px; padding: 12px; color: var(--text-muted); text-decoration: none; border-radius: 10px; transition: 0.3s; }
+        .nav-links a:hover { background: rgba(212, 175, 55, 0.1); color: var(--primary); }
 
-        .highlight-number {
-            font-size: 2.5rem; font-weight: bold; color: var(--primary); margin: 10px 0;
+        /* Conteúdo */
+        .main-content { margin-left: 260px; flex: 1; padding: 30px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        
+        /* Inputs Rápidos */
+        .config-bar {
+            background: #222; padding: 20px; border-radius: 15px; display: flex; gap: 20px; align-items: flex-end; margin-bottom: 30px; border: 1px solid #333;
         }
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        .input-group label { color: var(--primary); font-size: 0.8rem; font-weight: bold; }
+        .input-group input { background: #111; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 5px; width: 100px; }
+        .btn-update { background: var(--primary); border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-        .workout-item {
-            display: flex; justify-content: space-between; padding: 10px 0;
-            border-bottom: 1px solid #333; color: var(--text-muted);
-        }
+        /* Grids */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: var(--bg-panel); padding: 25px; border-radius: 15px; border: 1px solid #333; }
+        .card h3 { color: #fff; margin-bottom: 15px; font-size: 1.2rem; }
+        .highlight { font-size: 2.5rem; font-weight: bold; color: var(--primary); margin: 10px 0; }
+        .workout-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #333; color: #aaa; }
 
-        /* Responsividade */
         @media (max-width: 768px) {
-            body { flex-direction: column; }
-            .sidebar { position: relative; width: 100%; height: auto; border-right: none; }
-            .main-content { margin-left: 0; padding: 20px; }
-            .config-bar { flex-direction: column; align-items: stretch; }
-            .input-group input { width: 100%; }
+            .sidebar { display: none; } /* Simplificado pro mobile */
+            .main-content { margin-left: 0; padding: 15px; }
         }
     </style>
 </head>
 <body>
 
     <nav class="sidebar">
-        <div class="logo">
-            <i class="fas fa-dumbbell"></i> TITAN V39
-        </div>
+        <div class="logo"><i class="fas fa-dumbbell"></i> TITAN V39</div>
         <ul class="nav-links">
-            <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-home"></i> Início</a></li>
             <li><a href="#"><i class="fas fa-running"></i> Treinos</a></li>
-            <li style="margin-top: 20px;">
-                <a href="https://miguelsantos.tiiny.site/" target="_blank" style="border: 1px solid var(--primary); color: var(--primary);">
-                    <i class="fas fa-id-card"></i> Criador (Portfólio)
-                </a>
-            </li>
+            <li><a href="https://miguelsantos.tiiny.site/" target="_blank" style="color: var(--primary); border: 1px solid var(--primary); margin-top: 20px;"><i class="fas fa-id-card"></i> Criador (Portfólio)</a></li>
         </ul>
     </nav>
 
     <main class="main-content">
         <div class="header-top">
-            <div>
-                <h2>Painel do Atleta</h2>
-                <p style="color: var(--text-muted);">Acesso Liberado - Versão Gratuita</p>
-            </div>
-            <i class="fas fa-user-circle" style="font-size: 2rem; color: var(--primary);"></i>
+            <h2>Dashboard Titan</h2>
+            <div style="color: var(--primary);">● Sistema Online</div>
         </div>
 
         <div class="config-bar">
             <div class="input-group">
-                <label>Seu Peso (kg)</label>
-                <input type="number" id="weight" placeholder="Ex: 75">
+                <label>Peso (kg)</label>
+                <input type="number" id="peso" placeholder="70">
             </div>
             <div class="input-group">
-                <label>Sua Altura (cm)</label>
-                <input type="number" id="height" placeholder="Ex: 175">
+                <label>Altura (cm)</label>
+                <input type="number" id="altura" placeholder="175">
             </div>
-            <button class="btn-update" onclick="calculatePlan()">Atualizar Plano</button>
+            <button class="btn-update" onclick="calcular()">Atualizar Dados</button>
         </div>
 
         <div class="dashboard-grid">
             <div class="card">
-                <h3>Sua Meta Diária <i class="fas fa-fire"></i></h3>
-                <div style="text-align: center;">
-                    <div class="highlight-number" id="calories">0</div>
-                    <p style="color: var(--text-muted);">Kcal / dia</p>
-                </div>
-                <div class="workout-item" style="margin-top: 20px;">
-                    <span>Água Recomendada:</span>
-                    <strong id="water">0 Litros</strong>
-                </div>
+                <h3>Meta Diária</h3>
+                <div class="highlight" id="kcal">0 Kcal</div>
+                <p id="agua" style="color: #aaa;">Água: 0 Litros</p>
             </div>
 
             <div class="card">
-                <h3>Treino de Hoje (A) <i class="fas fa-dumbbell"></i></h3>
-                <div class="workout-item"><span>Supino Reto</span> <span>4x 10</span></div>
-                <div class="workout-item"><span>Supino Inclinado</span> <span>3x 12</span></div>
-                <div class="workout-item"><span>Voador</span> <span>3x 15</span></div>
-                <div class="workout-item"><span>Tríceps Corda</span> <span>4x 12</span></div>
-                <button class="btn-update" style="width: 100%; margin-top: 15px;">Marcar Concluído</button>
+                <h3>Treino A - Peito/Tríceps</h3>
+                <div class="workout-row"><span>Supino Reto</span><span>4x 10</span></div>
+                <div class="workout-row"><span>Supino Inclinado</span><span>3x 12</span></div>
+                <div class="workout-row"><span>Tríceps Corda</span><span>4x 12</span></div>
+                <button class="btn-update" style="width: 100%; margin-top: 15px;">Concluir Treino</button>
             </div>
         </div>
     </main>
 
     <script>
-        // Função simples para dar "vida" ao app sem backend
-        function calculatePlan() {
-            const weight = document.getElementById('weight').value;
-            const height = document.getElementById('height').value;
-
-            if(weight && height) {
-                // Cálculo Basal Estimado Simples (Fórmula genérica para exemplo)
-                const basal = (10 * weight) + (6.25 * height) - (5 * 25) + 5; 
-                // Adiciona fator de atividade moderada
-                const totalCalories = Math.floor(basal * 1.55); 
-                const waterIntake = (weight * 0.05).toFixed(1);
-
-                document.getElementById('calories').innerText = totalCalories;
-                document.getElementById('water').innerText = waterIntake + " L";
-                
-                // Animaçãozinha visual
-                document.getElementById('calories').style.color = "#fff";
-                setTimeout(() => {
-                    document.getElementById('calories').style.color = "#D4AF37";
-                }, 200);
+        function calcular() {
+            const p = document.getElementById('peso').value;
+            const a = document.getElementById('altura').value;
+            if(p && a) {
+                const kcal = (10 * p) + (6.25 * a) + 500; // Fórmula simples
+                const agua = (p * 0.05).toFixed(1);
+                document.getElementById('kcal').innerText = Math.floor(kcal) + " Kcal";
+                document.getElementById('agua').innerText = "Água: " + agua + " Litros";
             } else {
-                alert("Por favor, preencha peso e altura para calcular sua meta!");
+                alert("Preencha peso e altura!");
             }
         }
     </script>
