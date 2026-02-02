@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITAN V39 | Dashboard Aberto</title>
+    <title>TITAN V39 | System Full</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -12,197 +12,347 @@
             --primary: #D4AF37;
             --text-main: #ffffff;
             --text-muted: #888888;
+            --danger: #ff4444;
+            --success: #00C851;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); display: flex; min-height: 100vh; }
+        body { background-color: var(--bg-dark); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
         
-        /* --- ESTILOS DO SEU DASHBOARD ORIGINAL (MANTIDO) --- */
-        .sidebar {
-            width: 260px; background-color: var(--bg-panel); display: flex; flex-direction: column;
-            border-right: 1px solid #333; padding: 20px; position: fixed; height: 100%;
-        }
-        .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
-        .nav-links { list-style: none; }
-        .nav-links li { margin-bottom: 10px; }
-        .nav-links a { display: flex; align-items: center; gap: 15px; padding: 12px; color: var(--text-muted); text-decoration: none; border-radius: 10px; transition: 0.3s; }
-        .nav-links a:hover { background: rgba(212, 175, 55, 0.1); color: var(--primary); }
-
-        .main-content { margin-left: 260px; flex: 1; padding: 30px; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        
-        .config-bar {
-            background: #222; padding: 20px; border-radius: 15px; display: flex; gap: 20px; align-items: flex-end; margin-bottom: 30px; border: 1px solid #333;
-        }
-        .input-group { display: flex; flex-direction: column; gap: 5px; }
-        .input-group label { color: var(--primary); font-size: 0.8rem; font-weight: bold; }
-        .input-group input { background: #111; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 5px; width: 100px; }
-        .btn-update { background: var(--primary); border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: var(--bg-panel); padding: 25px; border-radius: 15px; border: 1px solid #333; }
-        .card h3 { color: #fff; margin-bottom: 15px; font-size: 1.2rem; }
-        .highlight { font-size: 2.5rem; font-weight: bold; color: var(--primary); margin: 10px 0; }
-        .workout-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #333; color: #aaa; }
-
-        @media (max-width: 768px) {
-            .sidebar { display: none; } 
-            .main-content { margin-left: 0; padding: 15px; }
-        }
-
-        /* --- NOVO: ESTILOS DA TELA DE LOGIN --- */
+        /* --- TELA DE LOGIN --- */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 15, 15, 0.98); z-index: 9999;
-            display: flex; justify-content: center; align-items: center;
-            flex-direction: column;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
         }
         .login-box {
             background: var(--bg-panel); padding: 40px; border-radius: 20px;
-            border: 1px solid #333; width: 90%; max-width: 400px;
-            text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            border: 1px solid #333; width: 90%; max-width: 400px; text-align: center;
         }
         .login-box input {
-            width: 100%; padding: 15px; margin: 10px 0; background: #0f0f0f;
-            border: 1px solid #333; color: #fff; border-radius: 8px; outline: none;
-        }
-        .login-box button {
-            width: 100%; padding: 15px; background: var(--primary); color: #000;
-            border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px;
+            width: 100%; padding: 12px; margin: 8px 0; background: #0f0f0f;
+            border: 1px solid #333; color: #fff; border-radius: 8px;
         }
         .preview-result {
             background: #222; border-left: 3px solid var(--primary);
             padding: 15px; margin: 15px 0; text-align: left; display: none;
         }
-        /* Oculta o conteúdo principal inicialmente */
-        #main-app { display: none; }
+        .btn-gold {
+            width: 100%; padding: 12px; background: var(--primary); color: #000;
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px;
+        }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        #main-app { display: none; width: 100%; height: 100%; }
+        
+        .sidebar {
+            width: 260px; background: var(--bg-panel); padding: 20px;
+            border-right: 1px solid #333; display: flex; flex-direction: column;
+        }
+        .logo { color: var(--primary); font-size: 1.5rem; font-weight: 800; margin-bottom: 40px; }
+        .nav-btn {
+            display: flex; align-items: center; gap: 15px; padding: 15px;
+            color: #aaa; text-decoration: none; border-radius: 10px; cursor: pointer; transition: 0.3s; margin-bottom: 5px;
+        }
+        .nav-btn:hover, .nav-btn.active { background: rgba(212, 175, 55, 0.1); color: var(--primary); }
+
+        .content { flex: 1; padding: 30px; overflow-y: auto; }
+        
+        /* --- ABAS (SEÇÕES) --- */
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* CARDS E GRIDS */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { background: var(--bg-panel); padding: 20px; border-radius: 15px; border: 1px solid #333; margin-bottom: 20px; }
+        .card h3 { color: #fff; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .stat-big { font-size: 2.5rem; font-weight: bold; color: var(--primary); }
+
+        /* LISTA DE TREINOS */
+        .exercise-item {
+            display: flex; justify-content: space-between; padding: 12px;
+            background: #222; margin-bottom: 8px; border-radius: 8px; border-left: 3px solid #444;
+        }
+        .exercise-item:hover { border-left-color: var(--primary); }
+
+        /* SELETOR DE TREINO */
+        select.titan-select {
+            width: 100%; padding: 10px; background: #000; color: #fff; border: 1px solid #444; border-radius: 5px; margin-bottom: 15px;
+        }
+
+        /* DIETA */
+        .macro-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; margin-top: 15px; }
+        .macro-box { background: #111; padding: 10px; border-radius: 8px; }
+        .macro-val { font-size: 1.2rem; font-weight: bold; color: #fff; }
+        .macro-label { font-size: 0.8rem; color: #aaa; }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; } /* Mobile simplificado */
+            .content { padding: 15px; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
     <div id="login-overlay">
         <div class="login-box">
-            <div class="logo" style="justify-content: center;"><i class="fas fa-dumbbell"></i> TITAN V39</div>
-            <p style="color: #888; margin-bottom: 20px;">Faça uma análise gratuita ou entre com sua senha.</p>
+            <div class="logo"><i class="fas fa-dumbbell"></i> TITAN V39</div>
+            <p style="color:#aaa; margin-bottom:15px;">Faça uma análise rápida ou entre:</p>
             
-            <input type="text" id="login-nome" placeholder="Seu Nome">
-            <input type="number" id="login-peso" placeholder="Peso (kg)" oninput="calcularPreview()">
-            <input type="number" id="login-altura" placeholder="Altura (cm)" oninput="calcularPreview()">
-            
-            <div id="preview-box" class="preview-result">
-                <p style="color: #fff; font-weight: bold;">📊 Pré-Análise:</p>
-                <p style="color: #aaa; font-size: 0.9rem;">Gasto Basal: <span id="prev-kcal" style="color: var(--primary);">--</span></p>
-                <p style="color: #aaa; font-size: 0.9rem;">Água Recomendada: <span id="prev-agua" style="color: var(--primary);">--</span></p>
-                <small style="display: block; margin-top: 5px; color: #666;">*Desbloqueie para ver o treino completo.</small>
+            <input type="text" id="log-nome" placeholder="Seu Nome">
+            <input type="number" id="log-peso" placeholder="Peso (kg)" oninput="calcPreview()">
+            <input type="number" id="log-altura" placeholder="Altura (cm)" oninput="calcPreview()">
+
+            <div id="preview" class="preview-result">
+                <p><strong>🔥 Gasto Basal:</strong> <span id="p-kcal" style="color:var(--primary)">--</span></p>
+                <p><strong>💧 Água Ideal:</strong> <span id="p-agua" style="color:var(--primary)">--</span></p>
+                <small style="color:#666">*Faça login para ver treinos e dieta.</small>
             </div>
 
-            <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
-
-            <input type="password" id="login-senha" placeholder="Senha VIP (TITANVIP)">
-            <button onclick="tentarLogin()">ACESSAR SISTEMA</button>
-            <p id="erro-msg" style="color: #ff4444; margin-top: 10px; display: none;">Senha incorreta!</p>
+            <hr style="border-color:#333; margin:20px 0;">
+            <input type="password" id="log-senha" placeholder="Senha VIP (TITANVIP)">
+            <button class="btn-gold" onclick="login()">ACESSAR SISTEMA</button>
+            <p id="error" style="color:var(--danger); display:none; margin-top:10px;">Senha Incorreta!</p>
         </div>
     </div>
 
-    <div id="main-app" style="width: 100%; display: none;"> <nav class="sidebar">
+    <div id="main-app">
+        <nav class="sidebar">
             <div class="logo"><i class="fas fa-dumbbell"></i> TITAN V39</div>
-            <ul class="nav-links">
-                <li><a href="#"><i class="fas fa-home"></i> Início</a></li>
-                <li><a href="#"><i class="fas fa-running"></i> Treinos</a></li>
-                <li><a href="https://miguelsantos.tiiny.site/" target="_blank" style="color: var(--primary); border: 1px solid var(--primary); margin-top: 20px;"><i class="fas fa-id-card"></i> Criador (Portfólio)</a></li>
-            </ul>
+            <div class="nav-btn active" onclick="showTab('home')"><i class="fas fa-home"></i> Início</div>
+            <div class="nav-btn" onclick="showTab('treinos')"><i class="fas fa-dumbbell"></i> Treinos</div>
+            <div class="nav-btn" onclick="showTab('dieta')"><i class="fas fa-apple-alt"></i> Dieta</div>
+            <div class="nav-btn" onclick="showTab('calc')"><i class="fas fa-calculator"></i> Calculadora IMC</div>
+            <div style="margin-top:auto; color:#666; font-size:0.8rem;">V39.2 - Miguel Santos Dev</div>
         </nav>
 
-        <main class="main-content">
-            <div class="header-top">
-                <h2 id="welcome-msg">Dashboard Titan</h2>
-                <div style="color: var(--primary);">● Sistema Online</div>
+        <main class="content">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 id="user-title">Painel do Atleta</h2>
+                <button onclick="location.reload()" style="background:none; border:1px solid #333; color:#fff; padding:5px 10px; border-radius:5px;">Sair</button>
             </div>
 
-            <div class="config-bar">
-                <div class="input-group">
-                    <label>Peso (kg)</label>
-                    <input type="number" id="peso" placeholder="70">
+            <div id="home" class="tab-content active">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3><i class="fas fa-fire"></i> Meta Diária</h3>
+                        <div class="stat-big" id="dash-kcal">0 Kcal</div>
+                        <p style="color:#aaa;">Objetivo: Hipertrofia</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-tint"></i> Hidratação</h3>
+                        <div class="stat-big" id="dash-agua">0 L</div>
+                        <p style="color:#aaa;">Recomendado hoje</p>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label>Altura (cm)</label>
-                    <input type="number" id="altura" placeholder="175">
-                </div>
-                <button class="btn-update" onclick="calcular()">Atualizar Dados</button>
-            </div>
-
-            <div class="dashboard-grid">
                 <div class="card">
-                    <h3>Meta Diária</h3>
-                    <div class="highlight" id="kcal">0 Kcal</div>
-                    <p id="agua" style="color: #aaa;">Água: 0 Litros</p>
-                </div>
-
-                <div class="card">
-                    <h3>Treino A - Peito/Tríceps</h3>
-                    <div class="workout-row"><span>Supino Reto</span><span>4x 10</span></div>
-                    <div class="workout-row"><span>Supino Inclinado</span><span>3x 12</span></div>
-                    <div class="workout-row"><span>Tríceps Corda</span><span>4x 12</span></div>
-                    <button class="btn-update" style="width: 100%; margin-top: 15px;">Concluir Treino</button>
+                    <h3>Status Atual</h3>
+                    <p>Peso: <span id="dash-peso" style="color:var(--primary)">--</span> kg</p>
+                    <p>Altura: <span id="dash-altura" style="color:var(--primary)">--</span> cm</p>
                 </div>
             </div>
+
+            <div id="treinos" class="tab-content">
+                <div class="card">
+                    <h3>Selecionar Ficha de Treino</h3>
+                    <select id="treino-select" class="titan-select" onchange="carregarTreino()">
+                        <option value="none">Selecione o Grupo Muscular...</option>
+                        <option value="a">Treino A: Peito & Tríceps</option>
+                        <option value="b">Treino B: Costas & Bíceps</option>
+                        <option value="c">Treino C: Pernas Completas</option>
+                        <option value="d">Treino D: Ombros & Trapézio</option>
+                        <option value="e">Treino E: Glúteos & Posterior</option>
+                        <option value="calis">Calistenia (Peso do Corpo)</option>
+                    </select>
+
+                    <div id="lista-exercicios">
+                        <p style="text-align:center; color:#666; padding:20px;">Selecione um treino acima para visualizar.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dieta" class="tab-content">
+                <div class="card">
+                    <h3><i class="fas fa-utensils"></i> Macros do Dia</h3>
+                    <div class="macro-grid">
+                        <div class="macro-box">
+                            <div class="macro-val" style="color:#4287f5">160g</div>
+                            <div class="macro-label">Proteína</div>
+                        </div>
+                        <div class="macro-box">
+                            <div class="macro-val" style="color:#f5a742">300g</div>
+                            <div class="macro-label">Carbo</div>
+                        </div>
+                        <div class="macro-box">
+                            <div class="macro-val" style="color:#f54242">70g</div>
+                            <div class="macro-label">Gordura</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Refeições</h3>
+                    <div class="exercise-item"><span>Café da Manhã</span> <span style="color:var(--success)">+ Add</span></div>
+                    <div class="exercise-item"><span>Almoço</span> <span style="color:var(--success)">+ Add</span></div>
+                    <div class="exercise-item"><span>Jantar</span> <span style="color:var(--success)">+ Add</span></div>
+                </div>
+            </div>
+
+            <div id="calc" class="tab-content">
+                <div class="card" style="max-width:500px; margin:0 auto;">
+                    <h3><i class="fas fa-weight"></i> Calculadora IMC</h3>
+                    <div style="text-align:center; padding:20px;">
+                        <div class="stat-big" id="imc-val">--</div>
+                        <p id="imc-msg" style="margin-top:10px;">Aguardando dados...</p>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
     <script>
-        // --- FUNÇÃO NOVA: CÁLCULO PRÉVIO NA TELA DE LOGIN ---
-        function calcularPreview() {
-            const p = document.getElementById('login-peso').value;
-            const a = document.getElementById('login-altura').value;
-            const box = document.getElementById('preview-box');
+        // --- DADOS GLOBAIS ---
+        let pesoUser = 0;
+        let alturaUser = 0;
+
+        // 1. PREVIEW LOGIN
+        function calcPreview() {
+            const p = parseFloat(document.getElementById('log-peso').value);
+            const a = parseFloat(document.getElementById('log-altura').value);
+            const box = document.getElementById('preview');
 
             if(p && a) {
                 box.style.display = 'block';
-                const kcal = (10 * p) + (6.25 * a) + 500;
+                const kcal = (10*p) + (6.25*a) + 500;
                 const agua = (p * 0.05).toFixed(1);
-                
-                document.getElementById('prev-kcal').innerText = Math.floor(kcal) + " Kcal";
-                document.getElementById('prev-agua').innerText = agua + " L";
+                document.getElementById('p-kcal').innerText = Math.floor(kcal) + ' kcal';
+                document.getElementById('p-agua').innerText = agua + ' L';
             } else {
                 box.style.display = 'none';
             }
         }
 
-        // --- FUNÇÃO NOVA: VALIDAR LOGIN E TRANSFERIR DADOS ---
-        function tentarLogin() {
-            const senha = document.getElementById('login-senha').value;
-            const p = document.getElementById('login-peso').value;
-            const a = document.getElementById('login-altura').value;
-            const nome = document.getElementById('login-nome').value;
+        // 2. SISTEMA DE LOGIN
+        function login() {
+            const s = document.getElementById('log-senha').value;
+            const n = document.getElementById('log-nome').value;
+            const p = document.getElementById('log-peso').value;
+            const a = document.getElementById('log-altura').value;
 
-            // SENHA: "TITANVIP" ou "admin"
-            if (senha === "TITANVIP" || senha === "admin") {
-                // Esconde login e mostra app
+            if(s === 'TITANVIP' || s === 'admin') {
                 document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('main-app').style.display = 'flex'; // Seu layout usa flex no body, mas aqui ajustamos a div
+                document.getElementById('main-app').style.display = 'flex';
                 
-                // Transfere os dados digitados para o dashboard interno
-                if(p) document.getElementById('peso').value = p;
-                if(a) document.getElementById('altura').value = a;
-                if(nome) document.getElementById('welcome-msg').innerText = "Olá, " + nome;
-
-                // Executa seu cálculo original
-                calcular();
+                // Salvar dados
+                pesoUser = p; alturaUser = a;
+                if(n) document.getElementById('user-title').innerText = "Olá, " + n;
+                
+                atualizarTudo();
             } else {
-                document.getElementById('erro-msg').style.display = 'block';
+                document.getElementById('error').style.display = 'block';
             }
         }
 
-        // --- SUA FUNÇÃO ORIGINAL ---
-        function calcular() {
-            const p = document.getElementById('peso').value;
-            const a = document.getElementById('altura').value;
-            if(p && a) {
-                const kcal = (10 * p) + (6.25 * a) + 500; // Fórmula simples
-                const agua = (p * 0.05).toFixed(1);
-                document.getElementById('kcal').innerText = Math.floor(kcal) + " Kcal";
-                document.getElementById('agua').innerText = "Água: " + agua + " Litros";
+        // 3. NAVEGAÇÃO ENTRE ABAS
+        function showTab(tabId) {
+            // Esconde todas
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            // Mostra a certa
+            document.getElementById(tabId).classList.add('active');
+            
+            // Atualiza menu (gambiarra visual simples)
+            event.target.classList.add('active');
+        }
+
+        // 4. ATUALIZAR DADOS DO DASHBOARD
+        function atualizarTudo() {
+            if(pesoUser && alturaUser) {
+                // Home
+                const kcal = Math.floor((10*pesoUser) + (6.25*alturaUser) + 500);
+                document.getElementById('dash-kcal').innerText = kcal + " Kcal";
+                document.getElementById('dash-agua').innerText = (pesoUser*0.05).toFixed(1) + " L";
+                document.getElementById('dash-peso').innerText = pesoUser;
+                document.getElementById('dash-altura').innerText = alturaUser;
+
+                // Calculadora IMC
+                const altM = alturaUser / 100;
+                const imc = (pesoUser / (altM*altM)).toFixed(1);
+                document.getElementById('imc-val').innerText = imc;
+                
+                let msg = "";
+                let color = "";
+                if(imc < 18.5) { msg = "Abaixo do Peso"; color="#f5a742"; }
+                else if(imc < 25) { msg = "Peso Ideal"; color="#00C851"; }
+                else { msg = "Sobrepeso"; color="#ff4444"; }
+                
+                document.getElementById('imc-msg').innerHTML = `<span style="color:${color}; font-weight:bold">${msg}</span>`;
+            }
+        }
+
+        // 5. BANCO DE TREINOS (DATABASE)
+        const treinosDB = {
+            'a': [
+                {nome: 'Supino Reto (Barra)', series: '4x 8-10'},
+                {nome: 'Supino Inclinado (Halter)', series: '3x 10-12'},
+                {nome: 'Crossover Polia Alta', series: '4x 12-15'},
+                {nome: 'Tríceps Corda', series: '4x 12'},
+                {nome: 'Tríceps Testa', series: '3x 10'}
+            ],
+            'b': [
+                {nome: 'Puxada Frente', series: '4x 10'},
+                {nome: 'Remada Curvada', series: '4x 10'},
+                {nome: 'Serrote Unilateral', series: '3x 12'},
+                {nome: 'Rosca Direta', series: '4x 10'},
+                {nome: 'Rosca Martelo', series: '3x 12'}
+            ],
+            'c': [
+                {nome: 'Agachamento Livre', series: '4x 8'},
+                {nome: 'Leg Press 45', series: '4x 12'},
+                {nome: 'Cadeira Extensora', series: '3x 15 (Falha)'},
+                {nome: 'Stiff', series: '4x 10'},
+                {nome: 'Panturrilha em Pé', series: '5x 15'}
+            ],
+            'd': [
+                {nome: 'Desenvolvimento Halter', series: '4x 10'},
+                {nome: 'Elevação Lateral', series: '4x 15'},
+                {nome: 'Elevação Frontal', series: '3x 12'},
+                {nome: 'Encolhimento (Trapézio)', series: '4x 15'}
+            ],
+            'e': [
+                {nome: 'Elevação Pélvica', series: '4x 10 (Pesado)'},
+                {nome: 'Agachamento Sumô', series: '3x 12'},
+                {nome: 'Cadeira Abdutora', series: '4x 15'},
+                {nome: 'Glúteo Caneleira', series: '3x 15'}
+            ],
+            'calis': [
+                {nome: 'Flexão de Braço (Push-ups)', series: '4x Falha'},
+                {nome: 'Barra Fixa (Pull-ups)', series: '4x Máximo'},
+                {nome: 'Mergulho (Dips)', series: '3x 12'},
+                {nome: 'Agachamento Livre', series: '4x 20'},
+                {nome: 'Abdominal Remador', series: '3x 20'}
+            ]
+        };
+
+        function carregarTreino() {
+            const tipo = document.getElementById('treino-select').value;
+            const lista = document.getElementById('lista-exercicios');
+            lista.innerHTML = ""; // Limpa
+
+            if(treinosDB[tipo]) {
+                treinosDB[tipo].forEach(ex => {
+                    lista.innerHTML += `
+                        <div class="exercise-item">
+                            <span style="font-weight:bold; color:#fff">${ex.nome}</span>
+                            <span style="color:var(--primary)">${ex.series}</span>
+                        </div>
+                    `;
+                });
             } else {
-                alert("Preencha peso e altura!");
+                lista.innerHTML = '<p style="text-align:center; color:#666; padding:20px;">Selecione um treino acima.</p>';
             }
         }
     </script>
