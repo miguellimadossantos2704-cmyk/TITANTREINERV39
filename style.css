@@ -773,4 +773,27 @@ input:focus {
 .timer-btn.skip:hover {
     background: #ff0055;
     color: #fff;
+
+}
+/* --- CORREÇÃO PARA CELULAR (MOBILE FIX) --- */
+@media (max-width: 480px) {
+    /* Faz o card do exercício se adaptar */
+    .exercise-item, .workout-row {
+        flex-wrap: wrap; /* Permite quebrar linha se não couber */
+        height: auto; /* Altura automática */
+        padding: 15px 10px;
+    }
+
+    /* Protege o texto de estourar a tela */
+    .exercise-item span, .workout-row span {
+        white-space: normal; /* Permite pular linha */
+        word-break: break-word; /* Quebra palavras gigantes */
+        max-width: 100%; 
+        line-height: 1.4;
+    }
+    
+    /* Ajusta botão se precisar */
+    .exercise-item button {
+        margin-top: 5px;
+    }
 }
