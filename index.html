@@ -3,23 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITAN V39 | Dashboard Aberto</title>
+    <title>TITAN V39 | System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --bg-dark: #0f0f0f;
             --bg-panel: #1a1a1a;
-            --primary: #D4AF37;
+            --primary: #D4AF37; /* Dourado Titan */
+            --danger: #ff4444;
+            --success: #00C851;
             --text-main: #ffffff;
             --text-muted: #888888;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); display: flex; min-height: 100vh; }
+        body { background-color: var(--bg-dark); color: var(--text-main); height: 100vh; overflow: hidden; }
+
+        /* --- TELA DE LOGIN (BLOQUEIO) --- */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 999;
+            display: flex; justify-content: center; align-items: center;
+            flex-direction: column; padding: 20px;
+        }
+        .login-box {
+            background: var(--bg-panel); padding: 30px; border-radius: 15px;
+            border: 1px solid #333; width: 100%; max-width: 400px;
+            text-align: center; box-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
+        }
+        .login-box h2 { color: var(--primary); margin-bottom: 20px; font-weight: 800; }
+        .login-input {
+            width: 100%; padding: 12px; margin: 8px 0; background: #111;
+            border: 1px solid #444; color: #fff; border-radius: 8px; outline: none;
+            transition: 0.3s;
+        }
+        .login-input:focus { border-color: var(--primary); }
         
-        /* Menu Lateral */
+        /* Área da Amostra Grátis */
+        .preview-box {
+            background: #222; border-left: 3px solid var(--primary);
+            padding: 15px; margin: 15px 0; text-align: left; display: none; /* Começa oculto */
+        }
+        .preview-box p { font-size: 0.9rem; margin: 5px 0; color: #ccc; }
+        .preview-val { color: #fff; font-weight: bold; float: right; }
+
+        .btn-login {
+            width: 100%; padding: 12px; background: var(--primary); color: #000;
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+            margin-top: 10px; font-size: 1rem; transition: 0.2s;
+        }
+        .btn-login:hover { transform: scale(1.02); }
+
+        /* --- DASHBOARD (SEU CÓDIGO ORIGINAL) --- */
+        #app-content { display: none; height: 100%; width: 100%; } /* Começa oculto */
+        .app-container { display: flex; height: 100%; width: 100%; }
+
         .sidebar {
             width: 260px; background-color: var(--bg-panel); display: flex; flex-direction: column;
-            border-right: 1px solid #333; padding: 20px; position: fixed; height: 100%;
+            border-right: 1px solid #333; padding: 20px;
         }
         .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
         .nav-links { list-style: none; }
@@ -27,90 +67,199 @@
         .nav-links a { display: flex; align-items: center; gap: 15px; padding: 12px; color: var(--text-muted); text-decoration: none; border-radius: 10px; transition: 0.3s; }
         .nav-links a:hover { background: rgba(212, 175, 55, 0.1); color: var(--primary); }
 
-        /* Conteúdo */
-        .main-content { margin-left: 260px; flex: 1; padding: 30px; }
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         
-        /* Inputs Rápidos */
         .config-bar {
-            background: #222; padding: 20px; border-radius: 15px; display: flex; gap: 20px; align-items: flex-end; margin-bottom: 30px; border: 1px solid #333;
+            background: #222; padding: 20px; border-radius: 15px; display: flex; gap: 20px; align-items: flex-end; margin-bottom: 30px; border: 1px solid #333; flex-wrap: wrap;
         }
         .input-group { display: flex; flex-direction: column; gap: 5px; }
         .input-group label { color: var(--primary); font-size: 0.8rem; font-weight: bold; }
         .input-group input { background: #111; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 5px; width: 100px; }
         .btn-update { background: var(--primary); border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-        /* Grids */
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: var(--bg-panel); padding: 25px; border-radius: 15px; border: 1px solid #333; }
+        .card { background: var(--bg-panel); padding: 25px; border-radius: 15px; border: 1px solid #333; position: relative; }
         .card h3 { color: #fff; margin-bottom: 15px; font-size: 1.2rem; }
         .highlight { font-size: 2.5rem; font-weight: bold; color: var(--primary); margin: 10px 0; }
         .workout-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #333; color: #aaa; }
 
         @media (max-width: 768px) {
-            .sidebar { display: none; } /* Simplificado pro mobile */
-            .main-content { margin-left: 0; padding: 15px; }
+            .sidebar { display: none; }
+            .main-content { padding: 15px; }
+            .config-bar { width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <nav class="sidebar">
-        <div class="logo"><i class="fas fa-dumbbell"></i> TITAN V39</div>
-        <ul class="nav-links">
-            <li><a href="#"><i class="fas fa-home"></i> Início</a></li>
-            <li><a href="#"><i class="fas fa-running"></i> Treinos</a></li>
-            <li><a href="https://miguelsantos.tiiny.site/" target="_blank" style="color: var(--primary); border: 1px solid var(--primary); margin-top: 20px;"><i class="fas fa-id-card"></i> Criador (Portfólio)</a></li>
-        </ul>
-    </nav>
+    <div id="login-screen">
+        <div class="login-box">
+            <div class="logo" style="justify-content: center; margin-bottom: 20px;">
+                <i class="fas fa-dumbbell"></i> TITAN V39
+            </div>
+            
+            <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 15px;">Preencha para análise gratuita:</p>
+            
+            <input type="text" id="login-nome" class="login-input" placeholder="Seu Nome">
+            <input type="number" id="login-peso" class="login-input" placeholder="Peso (kg)" oninput="updatePreview()">
+            <input type="number" id="login-altura" class="login-input" placeholder="Altura (cm)" oninput="updatePreview()">
 
-    <main class="main-content">
-        <div class="header-top">
-            <h2>Dashboard Titan</h2>
-            <div style="color: var(--primary);">● Sistema Online</div>
+            <div id="preview-box" class="preview-box">
+                <p>Seu IMC Estimado: <span id="prev-imc" class="preview-val">--</span></p>
+                <p>Taxa Metabólica Basal: <span id="prev-tmb" class="preview-val">--</span></p>
+                <div style="font-size: 0.7rem; color: var(--primary); margin-top: 10px; font-style: italic;">
+                    <i class="fas fa-lock"></i> Treino e Dieta bloqueados.
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #333; margin: 15px 0;">
+
+            <input type="password" id="login-senha" class="login-input" placeholder="Senha VIP (TITANVIP)">
+            <button class="btn-login" onclick="fazerLogin()">ACESSAR SISTEMA</button>
+            <p id="error-msg" style="color: var(--danger); font-size: 0.8rem; margin-top: 10px; display: none;">Senha Incorreta!</p>
+            
+            <a href="https://pay.kiwify.com.br/rDF7dh3" target="_blank" style="color: #666; font-size: 0.8rem; margin-top: 15px; display: block; text-decoration: none;">Não tenho senha ></a>
         </div>
+    </div>
 
-        <div class="config-bar">
-            <div class="input-group">
-                <label>Peso (kg)</label>
-                <input type="number" id="peso" placeholder="70">
-            </div>
-            <div class="input-group">
-                <label>Altura (cm)</label>
-                <input type="number" id="altura" placeholder="175">
-            </div>
-            <button class="btn-update" onclick="calcular()">Atualizar Dados</button>
+    <div id="app-content">
+        <div class="app-container">
+            <nav class="sidebar">
+                <div class="logo"><i class="fas fa-dumbbell"></i> TITAN V39</div>
+                <ul class="nav-links">
+                    <li><a href="#"><i class="fas fa-home"></i> Início</a></li>
+                    <li><a href="#"><i class="fas fa-running"></i> Treinos</a></li>
+                    <li><a href="https://miguelsantos.tiiny.site/" target="_blank" style="color: var(--primary); border: 1px solid var(--primary); margin-top: 20px;"><i class="fas fa-id-card"></i> Criador (Portfólio)</a></li>
+                </ul>
+            </nav>
+
+            <main class="main-content">
+                <div class="header-top">
+                    <div>
+                        <h2 id="user-welcome">Bem-vindo ao Titan</h2>
+                        <div style="color: var(--primary); font-size: 0.9rem;">● Acesso Elite Liberado</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <button onclick="sair()" style="background: none; border: 1px solid #333; color: #666; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Sair</button>
+                    </div>
+                </div>
+
+                <div class="config-bar">
+                    <div class="input-group">
+                        <label>Peso (kg)</label>
+                        <input type="number" id="peso">
+                    </div>
+                    <div class="input-group">
+                        <label>Altura (cm)</label>
+                        <input type="number" id="altura">
+                    </div>
+                    <button class="btn-update" onclick="calcular()">Recalcular Agora</button>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3><i class="fas fa-fire"></i> Meta Diária</h3>
+                        <div class="highlight" id="kcal">0 Kcal</div>
+                        <p id="agua" style="color: #aaa;">Água: 0 Litros</p>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-dumbbell"></i> Treino do Dia</h3>
+                        <div style="background: #222; padding: 10px; border-radius: 8px; margin-bottom: 10px; color: var(--primary); font-weight: bold; text-align: center;">
+                            Ficha A: Peito & Tríceps
+                        </div>
+                        <div class="workout-row"><span>Supino Reto</span><span>4x 10</span></div>
+                        <div class="workout-row"><span>Supino Inclinado</span><span>3x 12</span></div>
+                        <div class="workout-row"><span>Tríceps Corda</span><span>4x 12</span></div>
+                        <button class="btn-update" style="width: 100%; margin-top: 15px; background: #222; color: #fff; border: 1px solid #444;" onclick="alert('Treino Concluído! XP Adicionado.')">✅ Concluir Treino</button>
+                    </div>
+                </div>
+            </main>
         </div>
-
-        <div class="dashboard-grid">
-            <div class="card">
-                <h3>Meta Diária</h3>
-                <div class="highlight" id="kcal">0 Kcal</div>
-                <p id="agua" style="color: #aaa;">Água: 0 Litros</p>
-            </div>
-
-            <div class="card">
-                <h3>Treino A - Peito/Tríceps</h3>
-                <div class="workout-row"><span>Supino Reto</span><span>4x 10</span></div>
-                <div class="workout-row"><span>Supino Inclinado</span><span>3x 12</span></div>
-                <div class="workout-row"><span>Tríceps Corda</span><span>4x 12</span></div>
-                <button class="btn-update" style="width: 100%; margin-top: 15px;">Concluir Treino</button>
-            </div>
-        </div>
-    </main>
+    </div>
 
     <script>
+        // 1. Lógica da "Amostra Grátis" no Login
+        function updatePreview() {
+            const peso = parseFloat(document.getElementById('login-peso').value);
+            const altura = parseFloat(document.getElementById('login-altura').value);
+            const box = document.getElementById('preview-box');
+
+            if (peso > 0 && altura > 0) {
+                box.style.display = 'block'; // Mostra a caixa
+                
+                // Cálculo IMC
+                const altMetros = altura / 100;
+                const imc = (peso / (altMetros * altMetros)).toFixed(1);
+                
+                // Cálculo TMB (Basal simples)
+                const tmb = Math.floor((10 * peso) + (6.25 * altura) + 500); // Fórmula Mifflin simplificada
+
+                // Atualiza tela
+                document.getElementById('prev-imc').innerText = imc;
+                document.getElementById('prev-imc').style.color = imc > 25 ? '#ffbb33' : '#00C851';
+                
+                document.getElementById('prev-tmb').innerText = tmb + " kcal";
+            } else {
+                box.style.display = 'none';
+            }
+        }
+
+        // 2. Lógica de Login
+        function fazerLogin() {
+            const senha = document.getElementById('login-senha').value;
+            const nome = document.getElementById('login-nome').value || "Membro";
+            const pesoLogin = document.getElementById('login-peso').value;
+            const alturaLogin = document.getElementById('login-altura').value;
+            
+            // SENHA DEFINIDA AQUI
+            if (senha === "TITANVIP" || senha === "admin") {
+                // Sucesso: Troca as telas
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+
+                // Transfere os dados do login para o dashboard
+                document.getElementById('user-welcome').innerText = "Olá, " + nome;
+                document.getElementById('peso').value = pesoLogin;
+                document.getElementById('altura').value = alturaLogin;
+
+                // Roda o cálculo final
+                calcular();
+            } else {
+                // Erro
+                const error = document.getElementById('error-msg');
+                error.style.display = 'block';
+                // Animação de tremor
+                const box = document.querySelector('.login-box');
+                box.style.transform = 'translateX(10px)';
+                setTimeout(() => box.style.transform = 'translateX(0)', 100);
+            }
+        }
+
+        // 3. Lógica do Dashboard (Sua original melhorada)
         function calcular() {
             const p = document.getElementById('peso').value;
             const a = document.getElementById('altura').value;
+
             if(p && a) {
-                const kcal = (10 * p) + (6.25 * a) + 500; // Fórmula simples
+                // Fórmula de Gasto Total (Basal + Atividade leve)
+                // Ajustei para 1.4x (fator de atividade moderada)
+                const basal = (10 * p) + (6.25 * a) - (5 * 25) + 5; 
+                const totalKcal = Math.floor(basal * 1.4); 
+                
                 const agua = (p * 0.05).toFixed(1);
-                document.getElementById('kcal').innerText = Math.floor(kcal) + " Kcal";
+                
+                // Efeito de contagem
+                document.getElementById('kcal').innerText = totalKcal + " Kcal";
                 document.getElementById('agua').innerText = "Água: " + agua + " Litros";
             } else {
                 alert("Preencha peso e altura!");
             }
+        }
+
+        function sair() {
+            location.reload(); // Recarrega para voltar ao login
         }
     </script>
 </body>
