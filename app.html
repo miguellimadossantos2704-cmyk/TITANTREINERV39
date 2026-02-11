@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -34,9 +34,7 @@
                     <h2 style="margin:0;" data-i18n="my_routines">Meus Treinos</h2>
                     <p style="color: #aaa; font-size: 0.9rem; margin-top: 5px;" data-i18n="manage_routines">Gerencie suas fichas.</p>
                 </div>
-
                 <div class="routines-grid" id="routinesGrid"></div>
-
                 <button class="fab-btn" onclick="openCreateRoutineModal()" title="Novo Treino" data-i18n="new_routine">
                     <span style="font-size: 1.5rem;">+</span>
                 </button>
@@ -48,13 +46,11 @@
                 <button onclick="closeRoutineDetail()" class="back-btn" data-i18n="back">🡠 Voltar</button>
                 <button class="action-btn" onclick="openExerciseSelector()" style="width:auto; padding:0.5rem 1rem; font-size:0.9rem;" data-i18n="add_exercise">+ Adicionar Exercício</button>
             </div>
-
             <div class="diet-summary">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
                     <h2 id="routineTitle">Nome do Treino</h2>
                     <span id="routineCount" style="color:var(--accent);">0 Exercícios</span>
                 </div>
-
                 <div class="food-log">
                     <table>
                         <thead>
@@ -242,7 +238,7 @@
         </div>
     </div>
 
-    <script src="i18n.js"></script>
+    <script src="I18n.js"></script>
     <script src="script.js"></script>
 </body>
 
